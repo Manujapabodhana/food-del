@@ -20,7 +20,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 30px;
+    gap: 23px;
     text-align: center;
     margin: 20px 0px;
     overflow-x: scroll;
@@ -36,4 +36,11 @@
     cursor: pointer;
     border-radius: 50%;
     transition: 0.2s;
+}
+
+.explore-menu-list-item-p{
+    margin-top: 10px;
+    color: #747474;
+    font-size: max(1.4vw,16px);
+    cursor: pointer;
 }
