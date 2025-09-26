@@ -5,10 +5,13 @@ import Header from '../../components/Header/Header'
 import ExploreMenu from '../../components/ExploreMenu/ExploreMenu'
 
 const Home = () => {
+
+
+  const [category,setCategory] = React.useState("All")
   return (
     <div>
       <Header></Header>
-      <ExploreMenu></ExploreMenu>
+      <ExploreMenu category={category}  setCategory={setCategory}></ExploreMenu>
     </div>
   )
 }
