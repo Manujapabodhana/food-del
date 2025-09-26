@@ -6,6 +6,9 @@ export const StoreContext = createContext(null)
 
 const StoreContextProvider = (props) => {
 
+
+    const
+
     const contextValue = {
 
         food_list
