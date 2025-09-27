@@ -7,7 +7,7 @@ export const StoreContext = createContext(null)
 const StoreContextProvider = (props) => {
 
 
-    const
+    const [cardItems, setCardItems] = useState({})
 
     const contextValue = {
 
