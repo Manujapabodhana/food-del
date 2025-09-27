@@ -1,8 +1,7 @@
 import { createContext, useEffect, useState}  from "react";
 import { food_list } from "../assets/assets";   
 
-export const StoreContext = createContext(null)
-
+const StoreContext = createContext(null)
 
 const StoreContextProvider = (props) => {
 
@@ -44,4 +43,6 @@ const StoreContextProvider = (props) => {
         </StoreContext.Provider>
     )
 }
+
+export { StoreContext }
 export default StoreContextProvider
