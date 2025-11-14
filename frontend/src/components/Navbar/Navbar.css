@@ -66,16 +66,17 @@
         width: 140px;
     }
     .navbar-menu{
-        gap: 20px;
-        font-size: 17px;
+        gap: 15px;
+        font-size: 16px;
     }
     .navbar-right{
-        gap: 30px;
+        gap: 15px;
     }
     .navbar-right img{
-        width: 22px;
+        width: 20px;
     }
     .navbar-right button{
-        padding: 8px 25px;
+        padding: 7px 20px;
         font-size: 15px;
     }
+}
