@@ -1,41 +1,49 @@
-import { createContext, useEffect, useState}  from "react";
-import { food_list } from "../assets/assets";   
+import { createContext, useState } from "react";
+import { food_list, menu_list } from "../assets/assets";
 
-const StoreContext = createContext(null)
+const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
-
-
-    const [cardItems, setCardItems] = useState({});
-
+    const [cartItems, setCartItems] = useState({});
+    
     const addToCart = (itemId) => {
-        if (!cardItems[itemId]) {
-            setCardItems(prev => ({ ...prev, [itemId]: 1 }))
-        }
-        else{
-            setCardItems(prev => ({ ...prev, [itemId]: prev[itemId] + 1 }))
+        if(!cartItems[itemId]) {
+            setCartItems((prev) => ({...prev, [itemId]: 1}));
+        } else {
+            setCartItems((prev) => ({...prev, [itemId]: prev[itemId] + 1}));
         }
     }
-
 
     const removeFromCart = (itemId) => {
-        setCardItems(prev => ({...prev, [itemId]: prev[itemId] - 1 }))
+        setCartItems((prev) => ({...prev, [itemId]: prev[itemId] - 1}))
+    }
+    
+    const getTotalCartAmount = () => {
+        let totalAmount = 0;
+        for (const item in cartItems) {
+            if (cartItems[item] > 0) {
+                let itemInfo = food_list.find((product) => product._id === item);
+                if (itemInfo) {
+                    totalAmount += itemInfo.price * cartItems[item];
+                }
+            }
+        }
+        return totalAmount;
     }
 
-    useEffect(() => {
-        console.log(cardItems);
-    }, [cardItems])
+    const placeOrder = (deliveryData) => {
+        console.log(deliveryData);
+    }
 
     const contextValue = {
-
         food_list,
-        cardItems,
-        setCardItems,
+        menu_list,
+        cartItems,
         addToCart,
-        removeFromCart
-
-    }
-
+        removeFromCart,
+        getTotalCartAmount,
+        placeOrder
+    };
 
     return (
         <StoreContext.Provider value={contextValue}>
@@ -44,5 +52,5 @@ const StoreContextProvider = (props) => {
     )
 }
 
-export { StoreContext }
-export default StoreContextProvider
+export { StoreContext };
+export default StoreContextProvider;

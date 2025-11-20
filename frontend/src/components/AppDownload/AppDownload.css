@@ -1,92 +1,21 @@
 .app-download {
-    margin: 80px auto;
-    text-align: center;
+    margin: 100px auto;
     font-size: max(3vw, 20px);
+    text-align: center;
     font-weight: 500;
-    background: linear-gradient(135deg, #ff6b35, #ff8f65);
-    color: white;
-    padding: 60px 20px;
-    border-radius: 20px;
-    max-width: 1000px;
-    box-shadow: 0 10px 30px rgba(255, 107, 53, 0.3);
-    position: relative;
-    overflow: hidden;
 }
-
-.app-download::before {
-    content: '';
-    position: absolute;
-    top: -50%;
-    right: -50%;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
-    border-radius: 50%;
-}
-
-.app-download p {
-    margin-bottom: 30px;
-    line-height: 1.4;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.app-download-platforms {
+.app-download-platforms{
     display: flex;
     justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
+    gap: max(2vw,10px);
+    margin-top: 40px;
 }
-
-.app-download-platforms img {
-    max-width: 180px;
-    width: 100%;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    border-radius: 12px;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+.app-download-platforms img{
+   width:max(30vw,120px);
+   max-width: 180px;
+   transition: 0.5s;
+   cursor: pointer;
 }
-
-.app-download-platforms img:hover {
-    transform: translateY(-5px) scale(1.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .app-download {
-        margin: 60px 20px;
-        padding: 40px 20px;
-        font-size: 18px;
-    }
-    
-    .app-download-platforms {
-        gap: 15px;
-    }
-    
-    .app-download-platforms img {
-        max-width: 140px;
-    }
-}
-
-@media (max-width: 480px) {
-    .app-download {
-        margin: 40px 15px;
-        padding: 30px 15px;
-        font-size: 16px;
-        border-radius: 15px;
-    }
-    
-    .app-download p {
-        margin-bottom: 25px;
-    }
-    
-    .app-download-platforms {
-        flex-direction: column;
-        align-items: center;
-        gap: 15px;
-    }
-    
-    .app-download-platforms img {
-        max-width: 200px;
-    }
-}
+.app-download-platforms img:hover{
+    transform: scale(1.05);
+ }

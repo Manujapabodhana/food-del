@@ -1,6 +1,4 @@
-
-import React from 'react'
-import './Home.css'
+import React, { useState } from 'react'
 import Header from '../../components/Header/Header'
 import ExploreMenu from '../../components/ExploreMenu/ExploreMenu'
 import FoodDisplay from '../../components/FoodDisplay/FoodDisplay'
@@ -8,16 +6,15 @@ import AppDownload from '../../components/AppDownload/AppDownload'
 
 const Home = () => {
 
+  const [category,setCategory] = useState("All")
 
-  const [category,setCategory] = React.useState("All")
   return (
-    <div>
-      <Header></Header>
-      <ExploreMenu category={category}  setCategory={setCategory}></ExploreMenu>
-      <FoodDisplay category={category}></FoodDisplay>
-
-      <AppDownload></AppDownload>
-    </div>
+    <>
+      <Header/>
+      <ExploreMenu setCategory={setCategory} category={category}/>
+      <FoodDisplay category={category}/>
+      <AppDownload/>
+    </>
   )
 }
 
