@@ -17,7 +17,7 @@ app.use(express.json())
 app.use(cors())
 
 // db connection
-connectDB()
+await connectDB()
 
 // api endpoints
 app.use("/api/user", userRouter)
