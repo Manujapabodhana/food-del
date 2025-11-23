@@ -5,7 +5,7 @@
   "type": "module",
   "main": "server.js",
   "scripts": {
-    "dev": "nodemon server.js",
+    "dev": "npx kill-port 4000 && nodemon server.js",
     "server": "nodemon server.js"
   },
   "author": "",

@@ -46,10 +46,15 @@ export const connectDB = async () => {
     } catch (error) {
         console.error("❌ Primary DB Connection Error:", error.message);
         
-        // Try fallback connection
-        const fallback = process.env.MONGODB_URI_FALLBACK;
-        if (fallback) {
-            console.log('🔄 Attempting to connect using MONGODB_URI_FALLBACK...');
+        // Try multiple fallback connections
+        const fallbacks = [
+            process.env.MONGODB_URI_FALLBACK,
+            process.env.MONGODB_URI_FALLBACK2
+        ].filter(Boolean); // Remove undefined/null values
+        
+        for (let i = 0; i < fallbacks.length; i++) {
+            const fallback = fallbacks[i];
+            console.log(`🔄 Attempting to connect using fallback ${i + 1}...`);
             try {
                 await mongoose.connect(fallback, { 
                     serverSelectionTimeoutMS: 15000, 
@@ -57,31 +62,55 @@ export const connectDB = async () => {
                     maxPoolSize: 10,
                     connectTimeoutMS: 15000,
                 });
-                console.log('✅ DB Connected Successfully using fallback connection');
+                console.log(`✅ DB Connected Successfully using fallback ${i + 1}`);
                 return;
             } catch (err2) {
-                console.error('❌ Fallback connection also failed:', err2.message);
+                console.error(`❌ Fallback ${i + 1} connection also failed:`, err2.message);
             }
         }
         
         // If all connections fail, provide helpful error messages
         console.log("\n📋 MongoDB Connection Troubleshooting:");
+        console.log("🔍 Possible Issues:");
+        
         if (error.message && error.message.includes('querySrv ENOTFOUND')) {
-            console.log("🔍 DNS SRV Issue detected:");
-            console.log("1. Your network may be blocking DNS SRV lookups");
-            console.log("2. Try using a VPN or different network");
-            console.log("3. Use a non-SRV connection string from Atlas");
+            console.log("  • DNS SRV Issue: Your network may be blocking DNS SRV lookups");
+            console.log("    Solutions:");
+            console.log("    - Try using a VPN or different network");
+            console.log("    - Use a non-SRV connection string (see below)");
+            console.log("    - Set USE_LOCAL_DB=true for local development");
         }
         
-        if (error.message && (error.message.includes('IP') || error.message.includes('not authorized'))) {
-            console.log("🔍 IP Whitelist Issue detected:");
-            console.log("1. Go to MongoDB Atlas Dashboard");
-            console.log("2. Navigate to Network Access");
-            console.log("3. Add your current IP address or use 0.0.0.0/0 for development");
+        if (error.message && (error.message.includes('IP') || error.message.includes('not authorized') || error.message.includes('whitelist'))) {
+            console.log("  • IP Whitelist Issue: Your IP address isn't whitelisted in MongoDB Atlas");
+            console.log("    Solutions:");
+            console.log("    - Go to MongoDB Atlas Dashboard → Network Access");
+            console.log("    - Add your current IP address or use 0.0.0.0/0 for development");
+            console.log("    - Check your IP: https://whatismyipaddress.com/");
         }
         
-        console.log("4. Alternative: Set USE_LOCAL_DB=true in .env to use local MongoDB");
-        console.log("5. Check your username/password in the connection string\n");
+        console.log("  • Connection String Issues:");
+        console.log("    - Get fresh connection strings from Atlas:");
+        console.log("      1. Go to Atlas → Clusters → Connect");
+        console.log("      2. Choose 'Connect your application'");
+        console.log("      3. Copy the connection string");
+        console.log("      4. Replace <password> with your actual password");
+        console.log("      5. Update MONGODB_URI or MONGODB_URI_FALLBACK in .env");
+        
+        console.log("  • Local Development Option:");
+        console.log("    - Set USE_LOCAL_DB=true in .env");
+        console.log("    - Install MongoDB locally: https://www.mongodb.com/try/download/community");
+        console.log("    - Start MongoDB: mongod");
+        
+        console.log("  • Test Connection:");
+        console.log("    - Run: node -e \"require('./config/db.js').connectDB().then(() => console.log('Connected')).catch(console.error)\"");
+        
+        console.log("\n🔄 Current Configuration:");
+        console.log("  - USE_LOCAL_DB:", process.env.USE_LOCAL_DB);
+        console.log("  - DB_FAIL_FAST:", process.env.DB_FAIL_FAST);
+        console.log("  - Has MONGODB_URI:", !!process.env.MONGODB_URI);
+        console.log("  - Has MONGODB_URI_FALLBACK:", !!process.env.MONGODB_URI_FALLBACK);
+        console.log("  - Has MONGODB_URI_FALLBACK2:", !!process.env.MONGODB_URI_FALLBACK2);
 
         const failFast = process.env.DB_FAIL_FAST !== 'false';
         if (failFast) {

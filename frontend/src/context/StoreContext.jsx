@@ -72,7 +72,14 @@ const StoreContextProvider = (props) => {
 
     const loadCartData = async (token) => {
         try {
-            const response = await axios.post(url + "/api/cart/get", {}, { headers: token });
+            // Accept token as either a string, or as an object containing { token: <string> }
+            let headersObj = {}
+            if (typeof token === 'string') {
+                headersObj = { token };
+            } else if (token && typeof token === 'object') {
+                headersObj = token.token ? { token: token.token } : token;
+            }
+            const response = await axios.post(url + "/api/cart/get", {}, { headers: headersObj });
             if (response.data.success) {
                 setCartItems(response.data.cartData);
             }
@@ -93,6 +100,15 @@ const StoreContextProvider = (props) => {
         }
         loadData()
     }, [])
+
+    // Keep axios default headers up-to-date with current token (so we don't have to add headers everywhere)
+    useEffect(() => {
+        if (token) {
+            axios.defaults.headers.common['token'] = token;
+        } else {
+            delete axios.defaults.headers.common['token'];
+        }
+    }, [token]);
 
     const contextValue = {
         url,

@@ -35,36 +35,78 @@ app.get("/test", (req, res) => {
     res.json({success: true, message: "Backend server is working!", timestamp: new Date().toISOString()})
 });
 
-// Start the server and handle errors (esp. EADDRINUSE)
-const server = app.listen(port, () => {
-    console.log(`Server started on http://localhost:${port}`)
-    console.log(`Server PID: ${process.pid}`)
-})
+// Start the server with robust EADDRINUSE handling and optional fallback ports
+const MAX_PORT_ATTEMPTS = 10;
 
-server.on('error', (err) => {
-    if (err && err.code === 'EADDRINUSE') {
-        console.error(`\n❌ Port ${port} is already in use. Another process is listening on this port.`)
-        console.error(`To resolve: either kill the process using this port or change PORT in your .env.`)
-        console.error(`Suggested command (PowerShell): Get-Process -Id (Get-NetTCPConnection -LocalPort ${port}).OwningProcess`)
-        console.error(`Kill it using: taskkill /F /PID <PID>`)
+let serverRef = null;
+async function startServer(startPort, attemptsLeft = MAX_PORT_ATTEMPTS) {
+    const chosenPort = startPort;
+    let server = null;
+    try {
+        server = app.listen(chosenPort, () => {
+            console.log(`Server started on http://localhost:${chosenPort}`)
+            console.log(`Server PID: ${process.pid}`)
+        })
+        serverRef = server;
+        server.on('error', (err) => {
+            // handle EADDRINUSE for already-bound ports
+            if (err && err.code === 'EADDRINUSE') {
+                console.error(`\n❌ Port ${chosenPort} is already in use. Trying next port...`)
+                server.close();
+                if (attemptsLeft > 1) {
+                    // try next port
+                    startServer(chosenPort + 1, attemptsLeft - 1)
+                } else {
+                    console.error('Unable to find a free port to start the server after multiple attempts.');
+                    // As a fallback, show suggestion to user and exit
+                    console.error(`Suggested command (PowerShell): Get-Process -Id (Get-NetTCPConnection -LocalPort ${startPort}).OwningProcess`)
+                    console.error(`Kill the process using: taskkill /F /PID <PID>`)
+                    process.exit(1)
+                }
+            } else {
+                console.error('Server error:', err)
+                process.exit(1)
+            }
+        })
+    } catch (err) {
+        if (err && err.code === 'EADDRINUSE') {
+            console.error(`\n❌ Primary port ${chosenPort} is in use. Trying fallback port ${chosenPort + 1}...`)
+            if (attemptsLeft > 1) {
+                return startServer(chosenPort + 1, attemptsLeft - 1);
+            }
+        }
+        console.error('Failed to start server:', err)
         process.exit(1)
     }
-    console.error('Server error:', err)
+    return server
+}
+
+// Kick off server
+startServer(port).catch(err => {
+    console.error('Error while starting the server:', err)
     process.exit(1)
 })
 
 // Graceful shutdown on signals
 process.on('SIGINT', () => {
     console.log('\nReceived SIGINT, shutting down gracefully...')
-    server.close(() => {
+    if (serverRef) {
+        serverRef.close(() => {
         console.log('Server shut down.');
         process.exit(0)
     })
+    } else {
+        process.exit(0)
+    }
 })
 process.on('SIGTERM', () => {
     console.log('\nReceived SIGTERM, shutting down gracefully...')
-    server.close(() => {
+    if (serverRef) {
+        serverRef.close(() => {
         console.log('Server shut down.');
         process.exit(0)
     })
+    } else {
+        process.exit(0)
+    }
 })
