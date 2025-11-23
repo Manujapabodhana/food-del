@@ -1,10 +1,50 @@
-import React, { useState } from 'react'
+import React, { useState, useContext } from 'react'
 import './LoginPopup.css'
 import { assets } from '../../assets/assets'
+import { StoreContext } from '../../Context/StoreContext'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
 const LoginPopup = ({setShowLogin}) => {
 
-    const [currState,setCurrState] = useState("Sign Up");
+    const [currState, setCurrState] = useState("Sign Up");
+
+    const [data, setData] = useState({
+        name: "",
+        email: "",
+        password: ""
+    })
+
+    const { setToken, loadCartData, url } = useContext(StoreContext);
+
+    const onChangeHandler = (event) => {
+        const name = event.target.name
+        const value = event.target.value
+        setData(data => ({ ...data, [name]: value }))
+    }
+
+    const onLogin = async (e) => {
+        e.preventDefault()
+
+        let new_url = url;
+        if (currState === "Login") {
+            new_url += "/api/user/login";
+        }
+        else {
+            new_url += "/api/user/register"
+        }
+        const response = await axios.post(new_url, data);
+        if (response.data.success) {
+            setToken(response.data.token)
+            localStorage.setItem("token", response.data.token)
+            loadCartData({token:response.data.token})
+            setShowLogin(false)
+        }
+        else {
+            toast.error(response.data.message)
+        }
+    }
+
 
   return (
     <div className='login-popup'>
@@ -13,11 +53,11 @@ const LoginPopup = ({setShowLogin}) => {
                 <h2>{currState}</h2> <img onClick={()=>setShowLogin(false)} src={assets.cross_icon} alt="" />
             </div>
             <div className="login-popup-inputs">
-                {currState==="Sign Up"?<input type="text" placeholder='Your name' />:<></>}
-                <input type="email" placeholder='Your email' />
-                <input type="password" placeholder='Password' />
+                {currState==="Sign Up"?<input type="text" name="name" placeholder='Your name' value={data.name} onChange={onChangeHandler} />:<></>}
+                <input type="email" name="email" placeholder='Your email' value={data.email} onChange={onChangeHandler} />
+                <input type="password" name="password" placeholder='Password' value={data.password} onChange={onChangeHandler} />
             </div>
-            <button>{currState==="Login"?"Login":"Create account"}</button>
+            <button onClick={onLogin}>{currState==="Login"?"Login":"Create account"}</button>
             <div className="login-popup-condition">
                 <input type="checkbox" name="" id="" />
                 <p>By continuing, i agree to the terms of use & privacy policy.</p>
