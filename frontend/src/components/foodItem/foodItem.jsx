@@ -19,7 +19,7 @@ const FoodItem = ({id,name,price,description,image}) => {
   return (
     <div className='food-item'>
         <div className="food-item-img-container">
-            <img className='food-item-image' src={getImageSrc(image)} alt={name} />
+            <img className='food-item-image' src={getImageSrc(url+"/images/"+image)} alt={name} />
             {!cartItems[id]
             ?<img className='add' onClick={() => addToCart(id)} src={assets.add_icon_white} alt="add" />
             :<div className='food-item-counter'>
