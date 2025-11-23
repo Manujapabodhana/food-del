@@ -48,6 +48,17 @@
     background-color: #FF4C24;
     font-size: 15px;
     cursor: pointer;
+    transition: background-color 0.2s ease;
+}
+
+.login-popup-container button:hover:not(:disabled){
+    background-color: #E63E1C;
+}
+
+.login-popup-container button:disabled{
+    background-color: #CCCCCC;
+    cursor: not-allowed;
+    color: #666666;
 }
 .login-popup-condition{
     display: flex;
