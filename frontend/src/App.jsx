@@ -6,7 +6,8 @@ import { Route, Routes } from 'react-router-dom'
 import Cart from './pages/Cart/Cart'
 import LoginPopup from './components/LoginPopup/loginPopup'
 import PlaceOrder from './pages/PlaceOrder/PlaceOrder'
-import MyOrders from './pages/MyOrders/MyOrder'
+import MyOrders from './pages/MyOrders/MyOrders'
+import Verify from './pages/Verify/Verify'
 
 const App = () => {
 
@@ -22,6 +23,7 @@ const App = () => {
           <Route path='/cart' element={<Cart/>}/>
           <Route path='/order' element={<PlaceOrder/>}/>
           <Route path='/myorder' element={<MyOrders/>}/>
+          <Route path='/Verify' element={<Verify/>}/>
         </Routes>
       </div>
       <Footer />
