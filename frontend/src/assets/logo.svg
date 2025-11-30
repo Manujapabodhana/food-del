@@ -1,0 +1,11 @@
+<svg width="200" height="60" viewBox="0 0 200 60" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="paint0_linear" x1="0" y1="30" x2="200" y2="30" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF6B6B"/>
+      <stop offset="1" stop-color="#FF4757"/>
+    </linearGradient>
+  </defs>
+  <path d="M30 15C30 15 40 5 50 15C50 15 55 25 40 40C25 55 10 40 10 25C10 15 20 5 30 15Z" fill="#FF4757"/>
+  <path d="M30 15C30 15 35 5 30 0" stroke="#2ED573" stroke-width="3" stroke-linecap="round"/>
+  <text x="60" y="40" font-family="Arial, sans-serif" font-weight="bold" font-size="32" fill="#2F3542">Tomato.</text>
+</svg>
