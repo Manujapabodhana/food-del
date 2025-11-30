@@ -58,10 +58,16 @@ const placeOrder = async (req, res) => {
     }
 }
 
-// Placing User Order for Frontend using stripe
+// Placing User Order for Frontend using COD
 const placeOrderCod = async (req, res) => {
 
     try {
+        console.log("=== COD Order Placement ===");
+        console.log("UserId:", req.body.userId);
+        console.log("Items:", req.body.items);
+        console.log("Amount:", req.body.amount);
+        console.log("Address:", req.body.address);
+        
         const newOrder = new orderModel({
             userId: req.body.userId,
             items: req.body.items,
@@ -70,12 +76,15 @@ const placeOrderCod = async (req, res) => {
             payment: true,
         })
         await newOrder.save();
+        console.log("Order saved successfully with ID:", newOrder._id);
+        
         await userModel.findByIdAndUpdate(req.body.userId, { cartData: {} });
+        console.log("Cart cleared for user:", req.body.userId);
 
         res.json({ success: true, message: "Order Placed" });
 
     } catch (error) {
-        console.log(error);
+        console.log("Error placing COD order:", error);
         res.json({ success: false, message: "Error" })
     }
 }
@@ -94,10 +103,16 @@ const listOrders = async (req, res) => {
 // User Orders for Frontend
 const userOrders = async (req, res) => {
     try {
+        console.log("=== Fetching User Orders ===");
+        console.log("UserId:", req.body.userId);
+        
         const orders = await orderModel.find({ userId: req.body.userId });
+        console.log("Orders found:", orders.length);
+        console.log("Orders data:", JSON.stringify(orders, null, 2));
+        
         res.json({ success: true, data: orders })
     } catch (error) {
-        console.log(error);
+        console.log("Error fetching user orders:", error);
         res.json({ success: false, message: "Error" })
     }
 }

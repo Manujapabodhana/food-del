@@ -59,9 +59,12 @@ const PlaceOrder = () => {
         else{
             let response = await axios.post(url + "/api/order/placecod", orderData, { headers: { token } });
             if (response.data.success) {
-                navigate("/myorders")
-                toast.success(response.data.message)
                 setCartItems({});
+                toast.success(response.data.message);
+                // Small delay to ensure order is saved before navigating
+                setTimeout(() => {
+                    navigate("/myorders");
+                }, 500);
             }
             else {
                 toast.error("Something Went Wrong")
