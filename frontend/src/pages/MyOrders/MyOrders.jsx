@@ -7,6 +7,7 @@ import { assets } from '../../assets/assets';
 const MyOrders = () => {
   
   const [data,setData] =  useState([]);
+  const [trackingOrderId, setTrackingOrderId] = useState(null);
   const {url,token,currency} = useContext(StoreContext);
 
   const fetchOrders = async () => {
@@ -33,6 +34,63 @@ const MyOrders = () => {
       console.error("Error fetching orders:", error);
       console.error("Error details:", error.response?.data);
     }
+  };
+
+  const trackOrder = async (orderId) => {
+    setTrackingOrderId(orderId);
+    console.log("Tracking order:", orderId);
+    
+    // Store old status to compare
+    const oldOrder = data.find(order => order._id === orderId);
+    const oldStatus = oldOrder?.status;
+    
+    try {
+      // Fetch latest orders from backend to get updated status
+      const response = await axios.post(url+"/api/order/userorders",{},{headers:{token}});
+      
+      if (response.data.success) {
+        setData(response.data.data);
+        
+        // Find the specific order to show its status
+        const updatedOrder = response.data.data.find(order => order._id === orderId);
+        if (updatedOrder) {
+          console.log("Order status updated:", updatedOrder.status);
+          
+          // Check if status actually changed
+          if (oldStatus && oldStatus !== updatedOrder.status) {
+            // Status changed - show specific notification
+            if (updatedOrder.status === "Delivered") {
+              alert("🎉 Great News! Your order has been delivered!");
+            } else if (updatedOrder.status === "Out for delivery") {
+              alert("🚚 Your order is now out for delivery!");
+            } else if (updatedOrder.status === "Food Processing") {
+              alert("👨‍🍳 Your order is being prepared!");
+            } else {
+              alert(`📦 Order Status Updated: ${updatedOrder.status}`);
+            }
+          } else {
+            // No change - just show current status
+            if (updatedOrder.status === "Delivered") {
+              alert("✅ Your order has been delivered!");
+            } else if (updatedOrder.status === "Out for delivery") {
+              alert("🚚 Your order is out for delivery!");
+            } else if (updatedOrder.status === "Food Processing") {
+              alert("👨‍🍳 Your order is being prepared!");
+            } else {
+              alert(`📦 Current Status: ${updatedOrder.status}`);
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.error("Error tracking order:", error);
+      alert("❌ Failed to update order status. Please try again.");
+    }
+    
+    // Clear tracking state
+    setTimeout(() => {
+      setTrackingOrderId(null);
+    }, 1500);
   };
 
   useEffect(()=>{
@@ -74,8 +132,16 @@ const MyOrders = () => {
                   })}</p>
                   <p>{currency}{order.amount}.00</p>
                   <p>Items: {order.items.length}</p>
-                  <p><span>&#x25cf;</span> <b>{order.status}</b></p>
-                  <button onClick={fetchOrders}>Track Order</button>
+                  <p className={`order-status ${order.status.toLowerCase().replace(/\s+/g, '-')}`}>
+                    <span>&#x25cf;</span> <b>{order.status}</b>
+                  </p>
+                  <button 
+                    onClick={() => trackOrder(order._id)}
+                    disabled={trackingOrderId === order._id}
+                    className={trackingOrderId === order._id ? 'tracking' : ''}
+                  >
+                    {trackingOrderId === order._id ? '🔄 Tracking...' : 'Track Order'}
+                  </button>
               </div>
             )
           })

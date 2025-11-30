@@ -27,13 +27,93 @@
     font-weight: 500;
     color: #454545;
 }
+
+/* Order Status Colors */
+.order-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 12px;
+    border-radius: 20px;
+    background: #f5f5f5;
+    transition: all 0.3s ease;
+}
+
+.order-status.food-processing span {
+    color: #FF9800;
+    animation: blink 2s ease-in-out infinite;
+}
+
+.order-status.food-processing {
+    background: #FFF3E0;
+    border: 1px solid #FFE0B2;
+}
+
+.order-status.out-for-delivery span {
+    color: #2196F3;
+    animation: blink 2s ease-in-out infinite;
+}
+
+.order-status.out-for-delivery {
+    background: #E3F2FD;
+    border: 1px solid #BBDEFB;
+}
+
+.order-status.delivered span {
+    color: #4CAF50;
+}
+
+.order-status.delivered {
+    background: #E8F5E9;
+    border: 1px solid #C8E6C9;
+}
+
+@keyframes blink {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
 .my-orders button{
     border: none;
-    padding: 12px 0px;
-    border-radius: 4px;
-    background-color: #FFE1E1;
+    padding: 12px 20px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #FFE1E1, #FFD1D1);
     cursor: pointer;
     color: #454545;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(255, 76, 36, 0.1);
+}
+
+.my-orders button:hover:not(:disabled){
+    background: linear-gradient(135deg, #FF4C24, #FF6B47);
+    color: white;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(255, 76, 36, 0.3);
+}
+
+.my-orders button:disabled{
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.my-orders button.tracking{
+    background: linear-gradient(135deg, #4CAF50, #66BB6A);
+    color: white;
+    animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.02);
+    }
 }
 @media (max-width:900px) {
     .my-orders-order{
