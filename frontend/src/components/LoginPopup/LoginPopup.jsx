@@ -151,124 +151,89 @@ const LoginPopup = ({setShowLogin}) => {
   return (
     <div className='login-popup'>
         <form className="login-popup-container" onSubmit={onLogin}>
-            <div className="login-popup-title">
-                <h2>{currState}</h2>
-                <div>
-                    <button type="button" onClick={testBackend} style={{marginRight: '10px', fontSize: '12px', padding: '5px'}}>
-                        Test Backend
-                    </button>
-                    <img onClick={()=>setShowLogin(false)} src={assets.cross_icon} alt="" />
-                </div>
+            <div className="login-popup-close">
+                <img onClick={()=>setShowLogin(false)} src={assets.cross_icon} alt="Close" />
             </div>
+            
+            <div className="login-popup-header">
+                <div className="login-popup-icon">🍽️</div>
+                <h2>{currState === "Login" ? "Welcome Back!" : "Join Us Today!"}</h2>
+                <p className="login-popup-subtitle">
+                    {currState === "Login" 
+                        ? "Login to access your account and orders" 
+                        : "Create an account to start ordering"}
+                </p>
+            </div>
+
             <div className="login-popup-inputs">
-                {currState==="Sign Up" ? (
+                {currState==="Sign Up" && (
+                    <div className="input-group">
+                        <label htmlFor="name">Full Name</label>
+                        <input
+                            type="text"
+                            id="name"
+                            name="name"
+                            placeholder='Enter your full name'
+                            value={data.name}
+                            onChange={onChangeHandler}
+                            required
+                        />
+                    </div>
+                )}
+                
+                <div className="input-group">
+                    <label htmlFor="email">Email Address</label>
                     <input
-                        type="text"
-                        name="name"
-                        placeholder='Your name'
-                        value={data.name}
+                        type="email"
+                        id="email"
+                        name="email"
+                        placeholder='Enter your email'
+                        value={data.email}
                         onChange={onChangeHandler}
+                        required
                     />
-                ) : null}
-                <input
-                    type="email"
-                    name="email"
-                    placeholder='Your email'
-                    value={data.email}
-                    onChange={onChangeHandler}
-                />
-                <input
-                    type="password"
-                    name="password"
-                    placeholder='Password'
-                    value={data.password}
-                    onChange={onChangeHandler}
-                />
-            </div>
-            {/* Show live debug indicator and a 'force' button to help diagnose disabled behaviour */}
-            <div style={{display: 'flex', gap: '10px', alignItems:'center'}}>
-                <button
-                    type="submit"
-                    disabled={loading}
-                >
-                    {currState==="Login"?"Login":"Create account"}
-                </button>
-                <div style={{fontSize: '12px', color: '#666'}}>
-                    <div>{loading ? 'Submitting...' : 'Debug: Check console for logs'}</div>
                 </div>
-                {/* Force-submit button for debugging (doesn't honor disabled) */}
-                <button
-                    type="button"
-                    onClick={() => {
-                        console.log('🔧 Force Create clicked');
-                        // Call onLogin without a real event; provide an object with preventDefault
-                        onLogin({ preventDefault: () => {} });
-                    }}
-                    style={{fontSize:'12px', padding:'6px'}}
-                >
-                    Force Create (Debug)
-                </button>
-                {/* Direct HTTP debug requests - bypass validation and onLogin flow */}
-                <button
-                    type="button"
-                    onClick={async () => {
-                        try {
-                            setLoading(true)
-                            const new_url = url + "/api/user/register"
-                            const res = await axios.post(new_url, { name: data.name || 'Debug', email: data.email, password: data.password || 'password123' }, { headers: { 'Content-Type': 'application/json' } })
-                            setLastMessage('Raw Register: ' + JSON.stringify(res.data))
-                            console.log('Raw Register response', res.data)
-                        } catch (err) {
-                            console.error('Raw Register error', err)
-                            setLastMessage('Raw Register error: ' + (err.response?.data?.message || err.message))
-                        } finally { setLoading(false) }
-                    }}
-                    style={{fontSize:'12px', padding:'6px'}}
-                >
-                    Raw Register
-                </button>
-                <button
-                    type="button"
-                    onClick={async () => {
-                        try {
-                            setLoading(true)
-                            const new_url = url + "/api/user/login"
-                            const res = await axios.post(new_url, { email: data.email, password: data.password }, { headers: { 'Content-Type': 'application/json' } })
-                            setLastMessage('Raw Login: ' + JSON.stringify(res.data))
-                            console.log('Raw Login response', res.data)
-                            if (res.data.success) {
-                                setToken(res.data.token)
-                                localStorage.setItem('token', res.data.token)
-                            }
-                        } catch (err) {
-                            console.error('Raw Login error', err)
-                            setLastMessage('Raw Login error: ' + (err.response?.data?.message || err.message))
-                        } finally { setLoading(false) }
-                    }}
-                    style={{fontSize:'12px', padding:'6px'}}
-                >
-                    Raw Login
-                </button>
+                
+                <div className="input-group">
+                    <label htmlFor="password">Password</label>
+                    <input
+                        type="password"
+                        id="password"
+                        name="password"
+                        placeholder={currState === "Sign Up" ? 'Create a password (min 8 characters)' : 'Enter your password'}
+                        value={data.password}
+                        onChange={onChangeHandler}
+                        required
+                    />
+                </div>
             </div>
-            <div className="login-popup-condition">
-                <input type="checkbox" id="terms-checkbox" />
-                <label htmlFor="terms-checkbox">By continuing, I agree to the terms of use & privacy policy.</label>
-            </div>
-            {lastMessage && (
-                <div style={{marginTop: '8px', fontSize: '12px', color: '#333'}}>
-                    <b>Debug:</b> {lastMessage}
+            <button
+                type="submit"
+                className="login-submit-btn"
+                disabled={loading}
+            >
+                {loading ? (
+                    <span className="loading-spinner">⏳ {currState === "Login" ? "Logging in..." : "Creating account..."}</span>
+                ) : (
+                    <span>{currState === "Login" ? "Login" : "Create Account"}</span>
+                )}
+            </button>
+            {currState === "Sign Up" && (
+                <div className="login-popup-condition">
+                    <input type="checkbox" id="terms-checkbox" required />
+                    <label htmlFor="terms-checkbox">I agree to the terms of use & privacy policy</label>
                 </div>
             )}
-            {currState==="Login"
-                ?<p>Create a new account? <span onClick={()=>setCurrState('Sign Up')}>Click here</span></p>
-                :<p>Already have an account? <span onClick={()=>setCurrState('Login')}>Login here</span></p>
-            }
-            {/* Live debug display of form state */}
-            <div style={{marginTop: '8px', fontSize: '12px', color: '#444'}}>
-                <div><b>State:</b> {currState}</div>
-                <div><b>Name:</b> {data.name || '<empty>'}</div>
-                <div><b>Email:</b> {data.email || '<empty>'}</div>
-                <div><b>Password length:</b> {(data.password || '').length}</div>
+            
+            <div className="login-popup-footer">
+                <p>
+                    {currState === "Login" 
+                        ? "Don't have an account? " 
+                        : "Already have an account? "}
+                    <span onClick={()=>setCurrState(currState === "Login" ? "Sign Up" : "Login")}>
+                        {currState === "Login" ? "Sign Up" : "Login"}
+                    </span>
+                </p>
             </div>
         </form>
     </div>

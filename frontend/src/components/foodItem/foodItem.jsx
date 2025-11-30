@@ -6,12 +6,27 @@ import { StoreContext } from '../../Context/StoreContext'
 const FoodItem = ({id,name,price,description,image}) => {
 
     const {cartItems, addToCart, removeFromCart, url} = useContext(StoreContext)
+    
     const getImageSrc = (img) => {
         if (!img) return '';
         const str = String(img);
-        if (str.startsWith('http') || str.startsWith('/') || str.includes('/assets/')) {
+        
+        // If it's already a full URL or starts with http/https
+        if (str.startsWith('http://') || str.startsWith('https://')) {
             return str;
         }
+        
+        // If it's a local asset path (contains /assets/ or starts with /src/)
+        if (str.includes('/assets/') || str.startsWith('/src/')) {
+            return str;
+        }
+        
+        // If it starts with /, it's already an absolute path
+        if (str.startsWith('/')) {
+            return str;
+        }
+        
+        // Otherwise, construct the backend image URL
         return url + "/images/" + str;
     }
 
@@ -19,7 +34,7 @@ const FoodItem = ({id,name,price,description,image}) => {
   return (
     <div className='food-item'>
         <div className="food-item-img-container">
-            <img className='food-item-image' src={getImageSrc(url+"/images/"+image)} alt={name} />
+            <img className='food-item-image' src={getImageSrc(image)} alt={name} />
             {!cartItems[id]
             ?<img className='add' onClick={() => addToCart(id)} src={assets.add_icon_white} alt="add" />
             :<div className='food-item-counter'>
